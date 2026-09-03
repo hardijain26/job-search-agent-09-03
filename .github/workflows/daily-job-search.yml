@@ -1,0 +1,38 @@
+name: Daily Job Search Agent
+
+on:
+  schedule:
+    # 07:00 UTC daily. GitHub's cron can slip by a few minutes under load —
+    # fine for a daily digest, not fine if you need exact timing.
+    - cron: "0 7 * * *"
+  workflow_dispatch: {}  # lets you trigger a run manually from the Actions tab
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Run agent
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          RESUME_DOC_ID: ${{ secrets.RESUME_DOC_ID }}
+          USER_EMAIL: ${{ secrets.USER_EMAIL }}
+          JOB_SEARCH_QUERY: ${{ secrets.JOB_SEARCH_QUERY }}
+          JOB_LOCATION: ${{ secrets.JOB_LOCATION }}
+          APIFY_ACTOR_ID: ${{ secrets.APIFY_ACTOR_ID }}
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          DRIVE_UPLOAD_FOLDER_ID: ${{ secrets.DRIVE_UPLOAD_FOLDER_ID }}
+        run: python main.py
