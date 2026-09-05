@@ -1,3 +1,5 @@
+import time
+
 import requests
 
 import config
@@ -52,14 +54,22 @@ def tailor_resume(resume_text: str, job_description: str) -> str:
         "system_instruction": {"parts": [{"text": SYSTEM_MESSAGE}]},
         "contents": [{"role": "user", "parts": [{"text": user_message}]}],
     }
-    resp = requests.post(url, json=body, timeout=120)
-    if not resp.ok:
-        raise RuntimeError(f"Gemini API error {resp.status_code}: {resp.text}")
-    data = resp.json()
+    last_error = None
+    for attempt in range(3):
+        resp = requests.post(url, json=body, timeout=120)
+        if resp.ok:
+            data = resp.json()
+            candidates = data.get("candidates") or []
+            if not candidates:
+                raise RuntimeError(f"Gemini returned no candidates: {data}")
+            parts = candidates[0].get("content", {}).get("parts", [])
+            return "".join(p.get("text", "") for p in parts).strip()
 
-    candidates = data.get("candidates") or []
-    if not candidates:
-        raise RuntimeError(f"Gemini returned no candidates: {data}")
+        last_error = f"Gemini API error {resp.status_code}: {resp.text}"
+        if resp.status_code in (429, 503) and attempt < 2:
+            wait = 10 * (attempt + 1)  # 10s, then 20s
+            time.sleep(wait)
+            continue
+        break
 
-    parts = candidates[0].get("content", {}).get("parts", [])
-    return "".join(p.get("text", "") for p in parts).strip()
+    raise RuntimeError(last_error)
