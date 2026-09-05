@@ -42,7 +42,7 @@ SUPABASE_KEY = _require("SUPABASE_KEY")
 
 # --- Delivery ---
 USER_EMAIL = _require("USER_EMAIL")
-DRIVE_UPLOAD_FOLDER_ID = os.environ.get("DRIVE_UPLOAD_FOLDER_ID", "root")
+DRIVE_UPLOAD_FOLDER_ID = os.environ.get("DRIVE_UPLOAD_FOLDER_ID") or "root"
 
 GOOGLE_SCOPES = [
     "https://www.googleapis.com/auth/drive",
