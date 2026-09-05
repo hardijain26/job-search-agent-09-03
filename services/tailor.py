@@ -53,7 +53,8 @@ def tailor_resume(resume_text: str, job_description: str) -> str:
         "contents": [{"role": "user", "parts": [{"text": user_message}]}],
     }
     resp = requests.post(url, json=body, timeout=120)
-    resp.raise_for_status()
+    if not resp.ok:
+        raise RuntimeError(f"Gemini API error {resp.status_code}: {resp.text}")
     data = resp.json()
 
     candidates = data.get("candidates") or []
