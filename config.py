@@ -34,7 +34,7 @@ APIFY_MAX_POLL_ATTEMPTS = int(os.environ.get("APIFY_MAX_POLL_ATTEMPTS", "30"))  
 
 # --- Gemini (resume tailoring) ---
 GEMINI_API_KEY = _require("GEMINI_API_KEY")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
 
 # --- Supabase (dedup store) ---
 SUPABASE_URL = _require("SUPABASE_URL")
