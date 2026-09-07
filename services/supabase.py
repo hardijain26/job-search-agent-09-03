@@ -31,7 +31,22 @@ def filter_new_jobs(jobs: list[dict]) -> list[dict]:
 
 
 def store_job_record(job: dict) -> None:
+    # Validate configuration early
+    if not config.SUPABASE_URL or not config.SUPABASE_KEY:
+        raise ValueError(
+            "SUPABASE_URL and SUPABASE_KEY environment variables must be configured. "
+            "Check GitHub Actions secrets in repository settings."
+        )
+    
     url = f"{config.SUPABASE_URL}/rest/v1/jobs"
+    
+    # Validate URL format
+    if not url.startswith("https://"):
+        raise ValueError(
+            f"Invalid SUPABASE_URL format: {config.SUPABASE_URL}. "
+            "Expected format: https://[project-id].supabase.co"
+        )
+    
     payload = {
         "job_url": job["jobLink"],
         "job_title": job["title"],
