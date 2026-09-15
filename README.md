@@ -1,4 +1,4 @@
-# Job Search Agent (no n8n)
+# Job Search Agent 
 
 Same pipeline as the n8n template: daily LinkedIn scrape → ATS-tailored resume
 per job → PDF → Drive → email digest. Runs as a plain Python script on a
